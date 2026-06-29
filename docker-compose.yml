@@ -19,6 +19,7 @@ services:
   backend:
     build: ./backend
     container_name: fastapi_backend
+    restart: unless-stopped
     volumes:
       - ./backend:/app
     ports:
@@ -32,6 +33,7 @@ services:
   frontend:
     build: ./frontend
     container_name: react_frontend
+    restart: unless-stopped
     volumes:
       - ./frontend:/app
       - /app/node_modules # Local node_modules'un Docker içindekini ezmemesi için

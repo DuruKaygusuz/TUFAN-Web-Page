@@ -364,6 +364,20 @@ a {
   100% { background-position: 0% 50%; }
 }
 
+.gradient-text-reverse {
+  background: linear-gradient(90deg, var(--tfn-blue), var(--tfn-orange), #ff9a44, var(--tfn-blue));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientAnimationReverse 8s ease infinite;
+}
+
+@keyframes gradientAnimationReverse {
+  0% { background-position: 100% 50%; }
+  50% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }

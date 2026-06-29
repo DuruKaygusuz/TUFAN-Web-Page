@@ -48,7 +48,7 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
             <a
               href="#"
               className="nav-logo"
-              onClick={() => { isAdmin && onLogout(); closeMobile(); }}
+              onClick={() => { closeMobile(); }}
               style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
             >
               <img
@@ -85,18 +85,7 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </button>
 
-            {/* Admin giriş — desktop dropdown */}
-            {!isAdmin && (
-              <div style={{ position: 'relative', marginLeft: '0.5rem' }}>
-                <button
-                  onClick={onOpenAdminModal}
-                  className="btn-icon"
-                  title="Admin Girişi"
-                >
-                  <Settings size={18} />
-                </button>
-              </div>
-            )}
+
           </div>
 
           {/* Mobile: hamburger (Theme toggle removed) */}
@@ -137,12 +126,7 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
             >
               Başvuru Yap
             </button>
-            <button
-              onClick={() => { onOpenAdminModal(); closeMobile(); }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.9rem' }}
-            >
-              <Settings size={15} /> Admin Girişi
-            </button>
+
           </>
         ) : (
           <>

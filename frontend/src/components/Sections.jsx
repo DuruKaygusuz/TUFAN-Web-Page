@@ -3,7 +3,7 @@ import { Users, LayoutGrid, ShieldCheck, Cpu, Smartphone, Network, Clock } from 
 import ReactMarkdown from 'react-markdown';
 import API_BASE from '../config';
 
-export default function Sections() {
+export default function Sections({ onOpenAdminModal }) {
   const [siteText, setSiteText] = useState('');
   const [heroTitle1, setHeroTitle1] = useState('');
   const [heroTitle2, setHeroTitle2] = useState('');
@@ -85,7 +85,7 @@ export default function Sections() {
       <section id="about" className="section animate-fade-in">
         <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 4.5rem)', marginBottom: '1.5rem', maxWidth: '800px', fontWeight: '800', lineHeight: '1.1' }}>
           <span className="gradient-text">{heroTitle1}</span><br />
-          <span style={{ color: 'var(--text-secondary)' }}>{heroTitle2}</span>
+          <span className="gradient-text-reverse">{heroTitle2}</span>
         </h1>
         <div style={{ fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', color: 'var(--text-secondary)', maxWidth: '700px', margin: '0 0 2rem 0', fontWeight: '400', lineHeight: '1.8' }} className="markdown-content">
           <ReactMarkdown>{siteText}</ReactMarkdown>
@@ -162,7 +162,7 @@ export default function Sections() {
       <footer style={{ padding: '4rem 0 2rem 0', borderTop: '1px solid var(--border-color)', marginTop: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
         <div style={{ fontWeight: '700', fontSize: '1.2rem', letterSpacing: '-0.05em', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <img src="/tufan.jpg" alt="TUFAN" className="logo-themed" style={{ height: '28px', width: '28px', objectFit: 'contain', borderRadius: '50%' }} />
-          TUFAN.
+          TUFAN
         </div>
         
         <div style={{ display: 'flex', gap: '1.5rem' }}>
@@ -170,8 +170,16 @@ export default function Sections() {
           <a href={socialLinks.linkedin} target="_blank" rel="noreferrer" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textDecoration: 'none' }}>LinkedIn</a>
         </div>
 
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-          &copy; 2026 TUFAN. Tüm hakları saklıdır.
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span>&copy; 2026 TUFAN. Tüm hakları saklıdır.</span>
+          <button 
+            onClick={onOpenAdminModal} 
+            style={{ background: 'none', border: 'none', padding: 0, color: 'var(--text-secondary)', opacity: 0.15, cursor: 'pointer', fontSize: '0.8rem', transition: 'opacity 0.2s ease' }}
+            onMouseEnter={(e) => e.target.style.opacity = 0.7}
+            onMouseLeave={(e) => e.target.style.opacity = 0.15}
+          >
+            Yönetim
+          </button>
         </div>
       </footer>
     </div>

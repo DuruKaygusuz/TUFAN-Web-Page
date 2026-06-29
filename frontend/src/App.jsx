@@ -67,7 +67,7 @@ export default function App() {
         {isAdmin ? (
           <AdminDashboard />
         ) : (
-          <Sections />
+          <Sections onOpenAdminModal={openAdminModal} />
         )}
       </main>
 
