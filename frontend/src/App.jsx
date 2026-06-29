@@ -56,13 +56,13 @@ export default function App() {
   return (
     <>
       <div id="scroll-progress"></div>
-      <Navbar 
-        onOpenAdminModal={openAdminModal} 
+      <Navbar
+        onOpenAdminModal={openAdminModal}
         onOpenApplicationModal={openApplicationModal}
         isAdmin={isAdmin}
         onLogout={handleLogout}
       />
-      
+
       <main>
         {isAdmin ? (
           <AdminDashboard />
@@ -71,8 +71,8 @@ export default function App() {
         )}
       </main>
 
-      <Modals 
-        activeModal={activeModal} 
+      <Modals
+        activeModal={activeModal}
         onClose={closeModal}
         onLoginSuccess={handleLoginSuccess}
       />
