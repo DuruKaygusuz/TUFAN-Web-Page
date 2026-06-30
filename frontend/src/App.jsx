@@ -7,6 +7,7 @@ import AdminDashboard from './components/AdminDashboard';
 export default function App() {
   const [activeModal, setActiveModal] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [lang, setLang] = useState('tr');
 
   const openAdminModal = () => setActiveModal('admin');
   const openApplicationModal = () => setActiveModal('application');
@@ -61,13 +62,15 @@ export default function App() {
         onOpenApplicationModal={openApplicationModal}
         isAdmin={isAdmin}
         onLogout={handleLogout}
+        lang={lang}
+        onLangChange={setLang}
       />
 
       <main>
         {isAdmin ? (
           <AdminDashboard />
         ) : (
-          <Sections onOpenAdminModal={openAdminModal} />
+          <Sections onOpenAdminModal={openAdminModal} lang={lang} />
         )}
       </main>
 
@@ -75,6 +78,7 @@ export default function App() {
         activeModal={activeModal}
         onClose={closeModal}
         onLoginSuccess={handleLoginSuccess}
+        lang={lang}
       />
     </>
   );

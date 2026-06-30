@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { X, Lock } from 'lucide-react';
 import API_BASE from '../config';
+import { translations } from '../translations';
 
-const MAX_CHARS = 3000;
 const CLASS_OPTIONS = ['Hazırlık', '1', '2', '3', '4', '5', '6', 'Yüksek Lisans', 'Diğer'];
+const CLASS_OPTIONS_EN = ['Prep', '1', '2', '3', '4', '5', '6', 'Graduate', 'Other'];
+const MAX_CHARS = 3000;
 
-export default function Modals({ activeModal, onClose, onLoginSuccess }) {
+export default function Modals({ activeModal, onClose, onLoginSuccess, lang }) {
+  const t = translations[lang];
+  const classOptions = lang === 'tr' ? CLASS_OPTIONS : CLASS_OPTIONS_EN;
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -18,15 +23,15 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
     reason: '',
     about_me: ''
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
   const appsOpen = localStorage.getItem('site_apps_open') !== 'false';
-  
+
   const activeTeams = JSON.parse(localStorage.getItem('site_teams') || '[]')
-    .filter(t => t.active)
-    .map(t => t.name)
+    .filter(tm => tm.active)
+    .map(tm => tm.name)
     .sort((a, b) => a.localeCompare(b, 'tr'));
 
   // Only allow letters and spaces for name fields
@@ -74,28 +79,28 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
   // Validation
   const validate = () => {
     const newErrors = {};
-    
-    if (!formData.first_name.trim()) newErrors.first_name = 'Ad alanı zorunludur.';
-    if (!formData.last_name.trim()) newErrors.last_name = 'Soyad alanı zorunludur.';
-    
+
+    if (!formData.first_name.trim()) newErrors.first_name = t.errFirstName;
+    if (!formData.last_name.trim()) newErrors.last_name = t.errLastName;
+
     const phoneDigits = formData.phone.replace(/\D/g, '');
     if (phoneDigits.length !== 11) {
-      newErrors.phone = 'Telefon numarası 11 haneli olmalıdır.';
+      newErrors.phone = t.errPhoneLength;
     } else if (!phoneDigits.startsWith('05')) {
-      newErrors.phone = 'Telefon numarası 05 ile başlamalıdır.';
+      newErrors.phone = t.errPhoneStart;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Geçerli bir e-posta adresi giriniz.';
+      newErrors.email = t.errEmail;
     }
 
-    if (!formData.faculty.trim()) newErrors.faculty = 'Fakülte alanı zorunludur.';
-    if (!formData.department.trim()) newErrors.department = 'Bölüm alanı zorunludur.';
-    if (!formData.student_class) newErrors.student_class = 'Sınıf seçimi zorunludur.';
-    if (!formData.team) newErrors.team = 'Ekip seçimi zorunludur.';
-    if (!formData.reason.trim()) newErrors.reason = 'Bu alan zorunludur.';
-    if (!formData.about_me.trim()) newErrors.about_me = 'Bu alan zorunludur.';
+    if (!formData.faculty.trim()) newErrors.faculty = t.errFaculty;
+    if (!formData.department.trim()) newErrors.department = t.errDepartment;
+    if (!formData.student_class) newErrors.student_class = t.errClass;
+    if (!formData.team) newErrors.team = t.errTeam;
+    if (!formData.reason.trim()) newErrors.reason = t.errRequired;
+    if (!formData.about_me.trim()) newErrors.about_me = t.errRequired;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -105,7 +110,7 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    
+
     try {
       const response = await fetch(`${API_BASE}/applications/`, {
         method: 'POST',
@@ -118,11 +123,11 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
         setFormData({ first_name: '', last_name: '', phone: '', email: '', faculty: '', department: '', student_class: '', team: '', reason: '', about_me: '' });
         setErrors({});
       } else {
-        alert('Başvuru sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+        alert(t.errSubmit);
       }
     } catch (error) {
       console.error('Error submitting application:', error);
-      alert('Sunucuya bağlanırken bir hata oluştu.');
+      alert(t.errServer);
     } finally {
       setIsSubmitting(false);
     }
@@ -132,9 +137,9 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
     e.preventDefault();
     const username = e.target.username.value;
     const password = e.target.password.value;
-    
+
     if (username === 'admin' && password === 'admin') {
-      if(onLoginSuccess) onLoginSuccess();
+      if (onLoginSuccess) onLoginSuccess();
     } else {
       alert('Hatalı kullanıcı adı veya şifre!');
     }
@@ -147,8 +152,8 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
   return (
     <div className={`modal-overlay ${activeModal ? 'active' : ''}`} onClick={onClose}>
-      <div 
-        className="modal-content" 
+      <div
+        className="modal-content"
         onClick={(e) => e.stopPropagation()}
         style={activeModal === 'application' ? { maxWidth: '800px' } : { maxWidth: '400px' }}
       >
@@ -177,47 +182,47 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
         {activeModal === 'application' && (
           <div className="animate-fade-in">
-            <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Başvuru Formu</h2>
-            
+            <h2 className="section-title" style={{ fontSize: '2rem', marginBottom: '2rem' }}>{t.appModalTitle}</h2>
+
             {!appsOpen ? (
               <div style={{ textAlign: 'center', padding: '3rem 0' }}>
                 <Lock size={48} style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', opacity: 0.5 }} />
-                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Başvurular Geçici Olarak Kapalıdır</h3>
-                <p style={{ color: 'var(--text-secondary)' }}>TUFAN Elektromobil ekibine gösterdiğiniz ilgi için teşekkür ederiz. Şu an yeni başvuru kabul edilmemektedir.</p>
-                <button onClick={onClose} className="btn btn-outline" style={{ marginTop: '2rem' }}>Kapat</button>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>{t.appsClosed}</h3>
+                <p style={{ color: 'var(--text-secondary)' }}>{t.appsClosedDesc}</p>
+                <button onClick={onClose} className="btn btn-outline" style={{ marginTop: '2rem' }}>{t.close}</button>
               </div>
             ) : (
               <form onSubmit={handleApplicationSubmit} noValidate>
-                
+
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0 2rem' }}>
                   {/* Ad */}
                   <div className="form-group">
-                    <label className="form-label">Ad</label>
-                    <input 
-                      type="text" name="first_name" className="form-input" 
-                      value={formData.first_name} onChange={handleNameChange} 
-                      placeholder="Adınız"
+                    <label className="form-label">{t.fieldFirstName}</label>
+                    <input
+                      type="text" name="first_name" className="form-input"
+                      value={formData.first_name} onChange={handleNameChange}
+                      placeholder={t.fieldFirstNamePlaceholder}
                       style={errors.first_name ? { borderColor: '#ef4444' } : {}}
                     />
                     {errors.first_name && <div style={errorStyle}>{errors.first_name}</div>}
                   </div>
                   {/* Soyad */}
                   <div className="form-group">
-                    <label className="form-label">Soyad</label>
-                    <input 
-                      type="text" name="last_name" className="form-input" 
-                      value={formData.last_name} onChange={handleNameChange} 
-                      placeholder="Soyadınız"
+                    <label className="form-label">{t.fieldLastName}</label>
+                    <input
+                      type="text" name="last_name" className="form-input"
+                      value={formData.last_name} onChange={handleNameChange}
+                      placeholder={t.fieldLastNamePlaceholder}
                       style={errors.last_name ? { borderColor: '#ef4444' } : {}}
                     />
                     {errors.last_name && <div style={errorStyle}>{errors.last_name}</div>}
                   </div>
-                  
+
                   {/* Telefon */}
                   <div className="form-group">
-                    <label className="form-label">Telefon No</label>
-                    <input 
-                      type="tel" name="phone" className="form-input" 
+                    <label className="form-label">{t.fieldPhone}</label>
+                    <input
+                      type="tel" name="phone" className="form-input"
                       value={formData.phone ? formatPhone(formData.phone) : ''}
                       onChange={handlePhoneChange}
                       placeholder="(05__) ___ __ __"
@@ -227,11 +232,11 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
                   </div>
                   {/* E-posta */}
                   <div className="form-group">
-                    <label className="form-label">E-posta</label>
-                    <input 
-                      type="email" name="email" className="form-input" 
-                      value={formData.email} onChange={handleChange} 
-                      placeholder="ornek@mail.com"
+                    <label className="form-label">{t.fieldEmail}</label>
+                    <input
+                      type="email" name="email" className="form-input"
+                      value={formData.email} onChange={handleChange}
+                      placeholder="example@mail.com"
                       style={errors.email ? { borderColor: '#ef4444' } : {}}
                     />
                     {errors.email && <div style={errorStyle}>{errors.email}</div>}
@@ -239,22 +244,22 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
                   {/* Fakülte */}
                   <div className="form-group">
-                    <label className="form-label">Fakülte</label>
-                    <input 
-                      type="text" name="faculty" className="form-input" 
-                      value={formData.faculty} onChange={handleChange} 
-                      placeholder="Fakülteniz"
+                    <label className="form-label">{t.fieldFaculty}</label>
+                    <input
+                      type="text" name="faculty" className="form-input"
+                      value={formData.faculty} onChange={handleChange}
+                      placeholder={t.fieldFacultyPlaceholder}
                       style={errors.faculty ? { borderColor: '#ef4444' } : {}}
                     />
                     {errors.faculty && <div style={errorStyle}>{errors.faculty}</div>}
                   </div>
                   {/* Bölüm */}
                   <div className="form-group">
-                    <label className="form-label">Bölüm</label>
-                    <input 
-                      type="text" name="department" className="form-input" 
-                      value={formData.department} onChange={handleChange} 
-                      placeholder="Bölümünüz"
+                    <label className="form-label">{t.fieldDepartment}</label>
+                    <input
+                      type="text" name="department" className="form-input"
+                      value={formData.department} onChange={handleChange}
+                      placeholder={t.fieldDepartmentPlaceholder}
                       style={errors.department ? { borderColor: '#ef4444' } : {}}
                     />
                     {errors.department && <div style={errorStyle}>{errors.department}</div>}
@@ -263,35 +268,35 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
                 {/* Sınıf - Dropdown */}
                 <div className="form-group" style={{ marginTop: '0.5rem' }}>
-                  <label className="form-label">Sınıf</label>
-                  <select 
-                    name="student_class" className="form-input" 
+                  <label className="form-label">{t.fieldClass}</label>
+                  <select
+                    name="student_class" className="form-input"
                     value={formData.student_class} onChange={handleChange}
                     style={{ width: '100%', ...(errors.student_class ? { borderColor: '#ef4444' } : {}) }}
                   >
-                    <option value="" disabled>Sınıf seçiniz</option>
-                    {CLASS_OPTIONS.map(opt => (
+                    <option value="" disabled>{t.fieldClassPlaceholder}</option>
+                    {classOptions.map(opt => (
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
                   </select>
                   {errors.student_class && <div style={errorStyle}>{errors.student_class}</div>}
                 </div>
 
-                {/* Ekip Seçimi - Dropdown */}
+                {/* Ekip Seçimi */}
                 <div className="form-group" style={{ marginTop: '1rem' }}>
-                  <label className="form-label">Hangi ekibe katılmak istersiniz?</label>
-                  <select 
-                    name="team" className="form-input" 
+                  <label className="form-label">{t.fieldTeam}</label>
+                  <select
+                    name="team" className="form-input"
                     value={formData.team} onChange={handleChange}
                     style={{ width: '100%', ...(errors.team ? { borderColor: '#ef4444' } : {}) }}
                   >
-                    <option value="" disabled>Ekip seçiniz</option>
+                    <option value="" disabled>{t.fieldTeamPlaceholder}</option>
                     {activeTeams.length > 0 ? (
                       activeTeams.map(opt => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))
                     ) : (
-                      <option disabled>Şu an aktif ekip bulunmamaktadır.</option>
+                      <option disabled>{t.noActiveTeams}</option>
                     )}
                   </select>
                   {errors.team && <div style={errorStyle}>{errors.team}</div>}
@@ -299,12 +304,12 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
                 {/* Neden TUFAN */}
                 <div className="form-group" style={{ marginTop: '1.5rem' }}>
-                  <label className="form-label">Neden TUFAN'ı Seçtin?</label>
-                  <textarea 
-                    name="reason" className="form-textarea" 
+                  <label className="form-label">{t.fieldReason}</label>
+                  <textarea
+                    name="reason" className="form-textarea"
                     value={formData.reason} onChange={handleLimitedChange}
                     maxLength={MAX_CHARS}
-                    placeholder="Neden TUFAN'da yer almak istiyorsunuz?"
+                    placeholder={t.fieldReasonPlaceholder}
                     style={errors.reason ? { borderColor: '#ef4444' } : {}}
                   ></textarea>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -315,12 +320,12 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
 
                 {/* Kendinden Bahset */}
                 <div className="form-group">
-                  <label className="form-label">Kendinden Bahset</label>
-                  <textarea 
-                    name="about_me" className="form-textarea" 
+                  <label className="form-label">{t.fieldAboutMe}</label>
+                  <textarea
+                    name="about_me" className="form-textarea"
                     value={formData.about_me} onChange={handleLimitedChange}
                     maxLength={MAX_CHARS}
-                    placeholder="Kendinizden kısaca bahsedin..."
+                    placeholder={t.fieldAboutMePlaceholder}
                     style={errors.about_me ? { borderColor: '#ef4444' } : {}}
                   ></textarea>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -330,7 +335,7 @@ export default function Modals({ activeModal, onClose, onLoginSuccess }) {
                 </div>
 
                 <button type="submit" className="btn btn-primary" disabled={isSubmitting} style={{ width: '100%', marginTop: '1rem', opacity: isSubmitting ? 0.7 : 1 }}>
-                  {isSubmitting ? 'Gönderiliyor...' : 'Başvuruyu Gönder'}
+                  {isSubmitting ? t.submittingBtn : t.submitBtn}
                 </button>
               </form>
             )}
