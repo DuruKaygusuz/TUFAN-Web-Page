@@ -138,7 +138,7 @@ export default function Modals({ activeModal, onClose, onLoginSuccess, lang }) {
     const username = e.target.username.value;
     const password = e.target.password.value;
 
-    if (username === 'admin' && password === 'admin') {
+    if (username === 'admin' && password === '1234') {
       if (onLoginSuccess) onLoginSuccess();
     } else {
       alert('Hatalı kullanıcı adı veya şifre!');
