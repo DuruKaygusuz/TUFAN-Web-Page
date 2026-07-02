@@ -34,9 +34,27 @@ export default function AdminDashboard() {
     { id: 2, title: 'KURUMSAL TANITIM' },
     { id: 3, title: 'BASIN KİTİ' }
   ]);
-  const [socialLinks, setSocialLinks] = useState(() => JSON.parse(localStorage.getItem('site_social_links')) || {
-    instagram: 'https://instagram.com/tufan',
-    linkedin: 'https://linkedin.com/company/tufan'
+  const [socialLinks, setSocialLinks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_social_links');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.instagram === 'https://instagram.com/tufan') {
+          parsed.instagram = 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2';
+        }
+        if (parsed.linkedin === 'https://linkedin.com/company/tufan') {
+          parsed.linkedin = 'https://www.linkedin.com/company/akdeniz-tufan-elektromobil/';
+        }
+        localStorage.setItem('site_social_links', JSON.stringify(parsed));
+        return parsed;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return {
+      instagram: 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2',
+      linkedin: 'https://www.linkedin.com/company/akdeniz-tufan-elektromobil/'
+    };
   });
   const [featureCards, setFeatureCards] = useState(() => JSON.parse(localStorage.getItem('site_feature_cards')) || [
     { id: 1, title: 'Bütünleşik Altyapı', description: 'Farklı disiplinlerden gelen yetenekleri tek bir sistem altında birleştirerek yüksek performanslı bir ağ oluşturuyoruz.' },

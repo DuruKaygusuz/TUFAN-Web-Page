@@ -12,8 +12,35 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    if (document.documentElement.classList.contains('dark')) setIsDark(true);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark) || document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    } else {
+      document.documentElement.classList.remove('dark');
+      setIsDark(false);
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (e) => {
+      if (!localStorage.getItem('theme')) {
+        if (e.matches) {
+          document.documentElement.classList.add('dark');
+          setIsDark(true);
+        } else {
+          document.documentElement.classList.remove('dark');
+          setIsDark(false);
+        }
+      }
+    };
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      mediaQuery.removeEventListener('change', handleSystemThemeChange);
+    };
   }, []);
 
   // Close mobile menu on resize to desktop
@@ -32,9 +59,11 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
   const toggleTheme = () => {
     if (isDark) {
       document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
       setIsDark(false);
     } else {
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
       setIsDark(true);
     }
   };
@@ -129,6 +158,14 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
           {/* Mobile: hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="mobile-actions">
             <button
+              onClick={toggleTheme}
+              className="btn-icon"
+              title="Tema Değiştir"
+              style={{ marginRight: '0.5rem', padding: '0.5rem', color: 'var(--text-primary)' }}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button
               className={`nav-hamburger ${mobileOpen ? 'open' : ''}`}
               onClick={() => setMobileOpen(v => !v)}
               aria-label="Menüyü aç/kapat"
@@ -165,7 +202,32 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
               {t.navApply}
             </button>
 
-            <LangToggle mobile />
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginTop: '1rem' }}>
+              <LangToggle mobile />
+              <button
+                onClick={toggleTheme}
+                title="Tema Değiştir"
+                style={{
+                  background: 'none',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.55rem 1rem',
+                  fontSize: '1.05rem',
+                  fontWeight: '700',
+                  color: 'var(--text-primary)',
+                  letterSpacing: '0.05em',
+                  transition: 'all 0.2s ease',
+                  width: 'fit-content',
+                }}
+              >
+                {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                {lang === 'tr' ? (isDark ? 'AÇIK' : 'KARANLIK') : (isDark ? 'LIGHT' : 'DARK')}
+              </button>
+            </div>
           </>
         ) : (
           <>
@@ -176,6 +238,31 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
               style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem', padding: '0.85rem 2rem' }}
             >
               <LogOut size={16} /> {t.navLogout}
+            </button>
+
+            <button
+              onClick={toggleTheme}
+              title="Tema Değiştir"
+              style={{
+                background: 'none',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 1rem',
+                fontSize: '1.05rem',
+                fontWeight: '700',
+                color: 'var(--text-primary)',
+                letterSpacing: '0.05em',
+                transition: 'all 0.2s ease',
+                width: 'fit-content',
+                marginTop: '1rem'
+              }}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              {lang === 'tr' ? (isDark ? 'AÇIK' : 'KARANLIK') : (isDark ? 'LIGHT' : 'DARK')}
             </button>
           </>
         )}

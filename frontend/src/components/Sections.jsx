@@ -42,11 +42,27 @@ export default function Sections({ onOpenAdminModal, lang }) {
     // Sosyal Medya
     const savedSocial = localStorage.getItem('site_social_links');
     if (savedSocial) {
-      setSocialLinks(JSON.parse(savedSocial));
+      try {
+        const parsed = JSON.parse(savedSocial);
+        // Automatically migrate old defaults to new ones
+        if (parsed.instagram === 'https://instagram.com/tufan') {
+          parsed.instagram = 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2';
+        }
+        if (parsed.linkedin === 'https://linkedin.com/company/tufan') {
+          parsed.linkedin = 'https://www.linkedin.com/company/akdeniz-tufan-elektromobil/';
+        }
+        localStorage.setItem('site_social_links', JSON.stringify(parsed));
+        setSocialLinks(parsed);
+      } catch (e) {
+        setSocialLinks({
+          instagram: 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2',
+          linkedin: 'https://www.linkedin.com/company/akdeniz-tufan-elektromobil/'
+        });
+      }
     } else {
       setSocialLinks({
-        instagram: 'https://instagram.com/tufan',
-        linkedin: 'https://linkedin.com/company/tufan'
+        instagram: 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2',
+        linkedin: 'https://www.linkedin.com/company/akdeniz-tufan-elektromobil/'
       });
     }
 
