@@ -559,6 +559,8 @@ a {
 /* Mobile-only actions bar (hamburger + theme toggle duplicate) */
 .mobile-actions {
   display: none;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* ---- Tablet (≤ 1024px) ---- */

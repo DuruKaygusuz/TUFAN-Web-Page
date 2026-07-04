@@ -156,7 +156,7 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
           </div>
 
           {/* Mobile: hamburger */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} className="mobile-actions">
+          <div className="mobile-actions">
             <button
               onClick={toggleTheme}
               className="btn-icon"
