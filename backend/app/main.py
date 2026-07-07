@@ -1,8 +1,23 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware # <--- YENİ IMPORT
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from . import models, schemas
 from .database import SessionLocal, engine
+import logging
+
+# Loglama sistemini yapılandırıyoruz
+logging.basicConfig(
+    level=logging.INFO, # Hangi seviyedeki loglar kaydedilsin? (INFO, WARNING, ERROR)
+    format="%(asctime)s - %(levelname)s - %(message)s", # Log formatı: Saat - Seviye - Mesaj
+    handlers=[
+        logging.FileHandler("app.log"), # Tüm logları 'app.log' adlı bir dosyaya yaz
+        logging.StreamHandler() # Aynı zamanda terminalde de göster
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 # Veritabanı tablolarını otomatik oluştur
 models.Base.metadata.create_all(bind=engine)
@@ -20,17 +35,50 @@ with engine.connect() as conn:
 
 app = FastAPI(title="TUFAN Web API")
 
+origins = [
+    "http://localhost:3000",    # React varsayılan adresi
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",    # Vite / Vue varsayılan adresi
+    "http://127.0.0.1:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,            # Sadece bu adreslerden gelen isteklere izin ver
+    allow_credentials=True,
+    allow_methods=["*"],              # Tüm HTTP metotlarına (GET, POST, PUT, DELETE) izin ver
+    allow_headers=["*"],              # Tüm header bilgilerine izin ver
+)
+# Tüm HTTP hatalarını (404, 400 vb.) havada yakalayan merkezi sistem
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    # Hata çıktığı an dedektifimiz bunu dosyaya sessizce not ediyor:
+    logger.error(f"Hata Oluştu! Path: {request.url.path} | Durum Kodu: {exc.status_code} | Detay: {exc.detail}")
+    
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "status": "error",
+            "code": exc.status_code,
+            "message": exc.detail,
+            "path": request.url.path
+        }
+    )
 from fastapi.middleware.cors import CORSMiddleware
 
 # --- CORS AYARLARI BAŞLANGICI ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Tüm kaynaklara izin ver (ağdaki diğer cihazlar dahil)
+    allow_origins=[
+        "https://tufan-frontend.onrender.com",  
+        "http://localhost:3000",                
+        "http://localhost:5173",                
+    ],
     allow_credentials=True,
-    allow_methods=["*"],  # GET, POST, PUT, DELETE tüm metotlara izin ver
-    allow_headers=["*"],  # Tüm başlık (header) türlerine izin ver
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
-# --- CORS AYARLARI BİTİŞİ ---
 
 # 1. Veritabanı Oturumu (Session) Yönetimi
 def get_db():
