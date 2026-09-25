@@ -23,10 +23,8 @@ from fastapi.middleware.cors import CORSMiddleware
 # --- CORS AYARLARI BAŞLANGICI ---
 origins = [
     "https://tufanelektromobil.vercel.app",  # Vercel production
-    "https://tufan-web-page.vercel.app",      # Vercel alternatif URL
-    "http://localhost:5173",                  # Lokal geliştirme (Vite)
-    "http://localhost:3000",                  # Lokal geliştirme (alternatif)
-    "http://127.0.0.1:5173",                 # Lokal geliştirme (127.0.0.1)
+    "https://tufan-web-page.vercel.app",     # Vercel alternatif URL
+    "http://localhost:5173",                 # Lokal geliştirme (Vite)
 ]
 
 app.add_middleware(
