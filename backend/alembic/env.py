@@ -10,35 +10,6 @@ from app.models import Base
 
 config = context.config
 
-# Override sqlalchemy.url with dynamic environment variable and encode password if needed
-import os
-db_url = os.getenv("DATABASE_URL")
-if db_url:
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-    try:
-        from urllib.parse import quote_plus
-        if "@" in db_url:
-            scheme_split = db_url.split("://", 1)
-            if len(scheme_split) == 2:
-                scheme, rest = scheme_split
-                if "/" in rest:
-                    authority, db_name = rest.split("/", 1)
-                else:
-                    authority = rest
-                    db_name = ""
-                if "@" in authority:
-                    userinfo, host = authority.rsplit("@", 1)
-                    if ":" in userinfo:
-                        username, password = userinfo.split(":", 1)
-                        encoded_userinfo = f"{quote_plus(username)}:{quote_plus(password)}"
-                    else:
-                        encoded_userinfo = quote_plus(userinfo)
-                    db_url = f"{scheme}://{encoded_userinfo}@{host}/{db_name}"
-    except Exception:
-        pass
-    config.set_main_option("sqlalchemy.url", db_url)
-
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 

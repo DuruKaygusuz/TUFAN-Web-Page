@@ -1,65 +1,34 @@
-from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
-from fastapi.middleware.cors import CORSMiddleware # <--- YENİ IMPORT
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from . import models, schemas
 from .database import SessionLocal, engine
-import logging
-
-# Loglama sistemini yapılandırıyoruz
-logging.basicConfig(
-    level=logging.INFO, # Hangi seviyedeki loglar kaydedilsin? (INFO, WARNING, ERROR)
-    format="%(asctime)s - %(levelname)s - %(message)s", # Log formatı: Saat - Seviye - Mesaj
-    handlers=[
-        logging.FileHandler("app.log"), # Tüm logları 'app.log' adlı bir dosyaya yaz
-        logging.StreamHandler() # Aynı zamanda terminalde de göster
-    ]
-)
-
-logger = logging.getLogger(__name__)
 
 # Veritabanı tablolarını otomatik oluştur
 models.Base.metadata.create_all(bind=engine)
 
-# Mevcut tabloya sütunları ekleme
+# Mevcut tabloya 'admin_note' sütununu otomatik ekleme (Migration yerine basit çözüm)
 with engine.connect() as conn:
-    from sqlalchemy import text
     try:
-        if "sqlite" in str(engine.url):
-            try:
-                conn.execute(text("ALTER TABLE applications ADD COLUMN admin_note VARCHAR;"))
-            except Exception:
-                pass
-            try:
-                conn.execute(text("ALTER TABLE applications ADD COLUMN team VARCHAR;"))
-            except Exception:
-                pass
-        else:
-            conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS admin_note VARCHAR;"))
-            conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS team VARCHAR;"))
+        conn.execute(text("ALTER TABLE applications ADD COLUMN admin_note VARCHAR;"))
         conn.commit()
-    except Exception as e:
-        print(f"Migration error: {e}")
+    except Exception:
+        # Sütun zaten varsa hata verecektir, görmezden geliyoruz
         pass
 
 app = FastAPI(title="TUFAN Web API")
 
-origins = [
-    "https://tufan-frontend.onrender.com",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+from fastapi.middleware.cors import CORSMiddleware
 
+# --- CORS AYARLARI BAŞLANGICI ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Tüm kaynaklara izin ver (ağdaki diğer cihazlar dahil)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # GET, POST, PUT, DELETE tüm metotlara izin ver
+    allow_headers=["*"],  # Tüm başlık (header) türlerine izin ver
 )
+# --- CORS AYARLARI BİTİŞİ ---
 
 # 1. Veritabanı Oturumu (Session) Yönetimi
 def get_db():
