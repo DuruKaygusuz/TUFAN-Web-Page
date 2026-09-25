@@ -10,12 +10,50 @@ const DEFAULT_FEATURE_CARDS = [
   { id: 3, title: 'Yarışma ve Performans', description: 'Teknofest ve Uluslararası Efficiency Challenge Elektrikli Araç Yarışlarında derece hedefiyle çalışıyoruz.' }
 ];
 
+const DEFAULT_MEDIA_ITEMS = [
+  {
+    id: 1,
+    title: 'TEKNOFEST Hackathon 2025',
+    date: 'Mayıs 2025',
+    imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80',
+    description: 'TUFAN Elektromobil ekibi olarak katıldığımız TEKNOFEST 2025 Hackathon etkinliğinde geliştirdiğimiz yerli batarya yönetim yazılımı ve telemetri altyapımızla birincilik ödülüne layık görüldük.'
+  },
+  {
+    id: 2,
+    title: 'Elektromobil Şasi Test Etkinliği',
+    date: 'Nisan 2025',
+    imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+    description: 'Yeni nesil karbon fiber şasi testlerimizi başarıyla tamamladık. Aracımızın aerodinamik sürtünme katsayısı ve mukavemet testleri hedeflenen standartların üzerine çıktı.'
+  },
+  {
+    id: 3,
+    title: 'Kurumsal Sponsorluk Zirvesi',
+    date: 'Mart 2025',
+    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+    description: 'Sanayi ortaklarımız ve ana sponsorlarımızla bir araya gelerek TUFAN Elektromobil vizyonunu ve yeni araç konseptimizi tanıttığımız gala organizasyonumuz.'
+  },
+  {
+    id: 4,
+    title: 'Otonom Sürüş Çalıştayı',
+    date: 'Şubat 2025',
+    imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+    description: 'Yapay zeka ve bilgisayarlı görü ekibimizin düzenlediği 3 günlük kampüs çalıştayında araç içi görüntü işleme ve şerit takip sistemleri canlı olarak test edildi.'
+  },
+  {
+    id: 5,
+    title: 'Yerli İnovasyon Sergisi',
+    date: 'Ocak 2025',
+    imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+    description: 'Kendi geliştirdiğimiz yüksek verimlilikli motor sürücü kartlarımızı ve yerleşik şarj ünitelerimizi üniversitemiz inovasyon sergisinde öğrencilere ve akademisyenlere sunduk.'
+  }
+];
+
 export default function Sections({ onOpenAdminModal, lang }) {
   const [siteText, setSiteText] = useState('');
   const [heroTitle1, setHeroTitle1] = useState('');
   const [heroTitle2, setHeroTitle2] = useState('');
   const [projects, setProjects] = useState([]);
-  const [mediaItems, setMediaItems] = useState([]);
+  const [mediaItems, setMediaItems] = useState(null);
   const [socialLinks, setSocialLinks] = useState({});
   const [featureCards, setFeatureCards] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -40,12 +78,13 @@ export default function Sections({ onOpenAdminModal, lang }) {
     const savedMedia = localStorage.getItem('site_media_items');
     if (savedMedia) {
       try {
-        setMediaItems(JSON.parse(savedMedia));
+        const parsed = JSON.parse(savedMedia);
+        setMediaItems(parsed && parsed.length > 0 ? parsed : DEFAULT_MEDIA_ITEMS);
       } catch (e) {
-        setMediaItems(null);
+        setMediaItems(DEFAULT_MEDIA_ITEMS);
       }
     } else {
-      setMediaItems(null);
+      setMediaItems(DEFAULT_MEDIA_ITEMS);
     }
 
     // Sosyal Medya
