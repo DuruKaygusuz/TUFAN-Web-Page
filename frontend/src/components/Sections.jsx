@@ -53,7 +53,16 @@ export default function Sections({ onOpenAdminModal, lang }) {
   const [heroTitle1, setHeroTitle1] = useState('');
   const [heroTitle2, setHeroTitle2] = useState('');
   const [projects, setProjects] = useState([]);
-  const [mediaItems, setMediaItems] = useState(null);
+  const [mediaItems, setMediaItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('site_media_items');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return DEFAULT_MEDIA_ITEMS;
+  });
   const [socialLinks, setSocialLinks] = useState({});
   const [featureCards, setFeatureCards] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -74,16 +83,17 @@ export default function Sections({ onOpenAdminModal, lang }) {
       setFeatureCards(null);
     }
 
-    // Medya
-    const savedMedia = localStorage.getItem('site_media_items');
-    if (savedMedia) {
-      try {
+    // Medya — lazy initializer ile zaten yüklendi, burada sadece güncelleme yapıyoruz
+    try {
+      const savedMedia = localStorage.getItem('site_media_items');
+      if (savedMedia) {
         const parsed = JSON.parse(savedMedia);
-        setMediaItems(parsed && parsed.length > 0 ? parsed : DEFAULT_MEDIA_ITEMS);
-      } catch (e) {
+        if (parsed && parsed.length > 0) setMediaItems(parsed);
+        else setMediaItems(DEFAULT_MEDIA_ITEMS);
+      } else {
         setMediaItems(DEFAULT_MEDIA_ITEMS);
       }
-    } else {
+    } catch (e) {
       setMediaItems(DEFAULT_MEDIA_ITEMS);
     }
 
@@ -126,7 +136,7 @@ export default function Sections({ onOpenAdminModal, lang }) {
   const displayHero2 = heroTitle2 || 'TUFAN Elektromobil ile Yollarda.';
   const displayAbout = siteText || 'TUFAN Elektromobil Takımı, Akdeniz Üniversitesi bünyesinde yerli ve milli elektrikli araç teknolojileri geliştirmek amacıyla kurulmuş disiplinler arası bir mühendislik takımıdır.';
   const displayFeatureCards = featureCards || DEFAULT_FEATURE_CARDS;
-  const displayMediaItems = mediaItems || [];
+  const displayMediaItems = (mediaItems && mediaItems.length > 0) ? mediaItems : DEFAULT_MEDIA_ITEMS;
 
   return (
     <div className="container" style={{ marginTop: '6rem' }}>
