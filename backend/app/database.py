@@ -3,13 +3,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Render environment variables'dan DATABASE_URL oku. Yoksa varsayılan Neon URL'ini kullan.
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://neondb_owner:npg_81bIGQizpURn@ep-frosty-term-b4homr9e-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require"
-)
+# Güvenlik için şifreyi kodda saklamıyoruz, environment'tan okuyoruz.
+# Render'da ayarlanana kadar çökmemesi için geçici bir sqlite fallback'i ekliyoruz.
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 
-# postgresql:// veya postgres:// prefix'ini psycopg2 sürücüsüne yönlendir
+# SQLAlchemy'nin psycopg2 sürücüsüyle sorunsuz çalışması için URL düzeltmeleri
 if DATABASE_URL:
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
