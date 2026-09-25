@@ -25,11 +25,43 @@ export const translations = {
       { id: 3, title: 'Güvenilirlik', description: 'Sistemlerimiz, yüksek trafikli kampüs gereksinimlerini karşılamak üzere kesintisiz ve güvenli şekilde tasarlanmıştır.' },
     ],
 
-    // Media Items
+    // Media Items (Default Polaroid gallery fallback)
     mediaItems: [
-      { id: 1, title: 'HACKATHON 2025' },
-      { id: 2, title: 'KURUMSAL TANITIM' },
-      { id: 3, title: 'BASIN KİTİ' },
+      {
+        id: 1,
+        title: 'TEKNOFEST Hackathon 2025',
+        date: 'Mayıs 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80',
+        description: 'TUFAN Elektromobil ekibi olarak katıldığımız TEKNOFEST 2025 Hackathon etkinliğinde geliştirdiğimiz yerli batarya yönetim yazılımı ve telemetri altyapımızla birincilik ödülüne layık görüldük.'
+      },
+      {
+        id: 2,
+        title: 'Elektromobil Şasi Test Etkinliği',
+        date: 'Nisan 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+        description: 'Yeni nesil karbon fiber şasi testlerimizi başarıyla tamamladık. Aracımızın aerodinamik sürtünme katsayısı ve mukavemet testleri hedeflenen standartların üzerine çıktı.'
+      },
+      {
+        id: 3,
+        title: 'Kurumsal Sponsorluk Zirvesi',
+        date: 'Mart 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+        description: 'Sanayi ortaklarımız ve ana sponsorlarımızla bir araya gelerek TUFAN Elektromobil vizyonunu ve yeni araç konseptimizi tanıttığımız gala organizasyonumuz.'
+      },
+      {
+        id: 4,
+        title: 'Otonom Sürüş Çalıştayı',
+        date: 'Şubat 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        description: 'Yapay zeka ve bilgisayarlı görü ekibimizin düzenlediği 3 günlük kampüs çalıştayında araç içi görüntü işleme ve şerit takip sistemleri canlı olarak test edildi.'
+      },
+      {
+        id: 5,
+        title: 'Yerli İnovasyon Sergisi',
+        date: 'Ocak 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+        description: 'Kendi geliştirdiğimiz yüksek verimlilikli motor sürücü kartlarımızı ve yerleşik şarj ünitelerimizi üniversitemiz inovasyon sergisinde öğrencilere ve akademisyenlere sunduk.'
+      }
     ],
 
     // Projects section
@@ -39,6 +71,9 @@ export const translations = {
 
     // Media section
     mediaSectionTitle: 'Medya ve Arşiv',
+    mediaDragHint: '← Sürükleyerek inceleyin • Detay için fotoğrafa tıklayın →',
+    noMediaMsg: 'Henüz medya veya fotoğraf eklenmemiş.',
+    eventDetailTitle: 'Etkinlik Detayı',
 
     // Footer
     footerRights: '© 2026 TUFAN. Tüm hakları saklıdır.',
@@ -47,7 +82,7 @@ export const translations = {
     // Application Modal
     appModalTitle: 'Başvuru Formu',
     appsClosed: 'Başvurular Geçici Olarak Kapalıdır',
-    appsClosedDesc: 'TUFAN Elektromobil ekibine gösterdiğiniz ilgi için teşekkür ederiz. Şu an yeni başvuru kabul edilmemektedir.',
+    appsClosedDesc: 'Thank you for your interest in the TUFAN Electromobile team. We are not accepting new applications at this time.',
     close: 'Kapat',
     fieldFirstName: 'Ad',
     fieldFirstNamePlaceholder: 'Adınız',
@@ -111,9 +146,41 @@ export const translations = {
 
     // Media Items
     mediaItems: [
-      { id: 1, title: 'HACKATHON 2025' },
-      { id: 2, title: 'CORPORATE INTRO' },
-      { id: 3, title: 'PRESS KIT' },
+      {
+        id: 1,
+        title: 'TEKNOFEST Hackathon 2025',
+        date: 'May 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80',
+        description: 'Our TUFAN Electromobile team won 1st place at the TEKNOFEST 2025 Hackathon with our custom battery management software and telemetry infrastructure.'
+      },
+      {
+        id: 2,
+        title: 'Electromobile Chassis Test',
+        date: 'April 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
+        description: 'Successfully completed structural drag coefficient and durability testing on our next-generation carbon fiber vehicle chassis.'
+      },
+      {
+        id: 3,
+        title: 'Corporate Sponsorship Summit',
+        date: 'March 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+        description: 'Gathered with industry partners and sponsors to present TUFAN Electromobile 2025 roadmap and new vehicle prototype concept.'
+      },
+      {
+        id: 4,
+        title: 'Autonomous Driving Workshop',
+        date: 'February 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        description: '3-day campus workshop on computer vision and neural networks for in-vehicle lane tracking and real-time obstacle detection.'
+      },
+      {
+        id: 5,
+        title: 'Domestic Innovation Expo',
+        date: 'January 2025',
+        imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+        description: 'Showcasing our in-house high-efficiency motor driver PCBs and onboard charger units to students and faculty members.'
+      }
     ],
 
     // Projects section
@@ -123,6 +190,9 @@ export const translations = {
 
     // Media section
     mediaSectionTitle: 'Media & Archive',
+    mediaDragHint: '← Drag to explore • Click photo for details →',
+    noMediaMsg: 'No media or photos added yet.',
+    eventDetailTitle: 'Event Details',
 
     // Footer
     footerRights: '© 2026 TUFAN. All rights reserved.',

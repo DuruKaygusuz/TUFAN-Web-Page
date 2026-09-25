@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Users, ShieldCheck, Cpu, Smartphone, Network } from 'lucide-react';
+import { Users, ShieldCheck, Cpu, Smartphone, Network, X, Calendar, Camera } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import API_BASE from '../config';
 import { translations } from '../translations';
+import MediaMarquee from './MediaMarquee';
 
 export default function Sections({ onOpenAdminModal, lang }) {
   const [siteText, setSiteText] = useState('');
@@ -12,6 +13,7 @@ export default function Sections({ onOpenAdminModal, lang }) {
   const [mediaItems, setMediaItems] = useState([]);
   const [socialLinks, setSocialLinks] = useState({});
   const [featureCards, setFeatureCards] = useState([]);
+  const [selectedMedia, setSelectedMedia] = useState(null);
 
   const t = translations[lang];
 
@@ -34,7 +36,11 @@ export default function Sections({ onOpenAdminModal, lang }) {
     // Medya
     const savedMedia = localStorage.getItem('site_media_items');
     if (savedMedia) {
-      setMediaItems(JSON.parse(savedMedia));
+      try {
+        setMediaItems(JSON.parse(savedMedia));
+      } catch (e) {
+        setMediaItems(null);
+      }
     } else {
       setMediaItems(null); // null = dile göre translations'dan al
     }
@@ -44,7 +50,6 @@ export default function Sections({ onOpenAdminModal, lang }) {
     if (savedSocial) {
       try {
         const parsed = JSON.parse(savedSocial);
-        // Automatically migrate old defaults to new ones
         if (parsed.instagram === 'https://instagram.com/tufan') {
           parsed.instagram = 'https://www.instagram.com/tufanelektromobil?igsh=bW0zemZ0YW9tNXM2';
         }
@@ -164,17 +169,94 @@ export default function Sections({ onOpenAdminModal, lang }) {
         </div>
       </section>
 
-      <section id="media" className="section reveal" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '6rem' }}>
-        <h2 style={{ fontSize: '2.5rem', marginBottom: '3rem', color: 'var(--tfn-blue)' }}>{t.mediaSectionTitle}</h2>
+      {/* Media & Archive Section */}
+      <section id="media" className="section reveal" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '6rem', overflow: 'hidden' }}>
+        <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem', color: 'var(--tfn-blue)' }}>{t.mediaSectionTitle}</h2>
 
-        <div className="premium-grid">
-          {displayMediaItems.map(item => (
-            <div key={item.id} style={{ height: '250px', backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ color: 'var(--text-secondary)', fontWeight: '500', fontSize: '0.9rem', letterSpacing: '0.05em' }}>{item.title}</span>
-            </div>
-          ))}
-        </div>
+        {displayMediaItems.length === 0 ? (
+          <p style={{ color: 'var(--text-secondary)' }}>{t.noMediaMsg}</p>
+        ) : (
+          <MediaMarquee
+            items={displayMediaItems}
+            onSelectMedia={(item) => setSelectedMedia(item)}
+            dragHint={t.mediaDragHint}
+          />
+        )}
       </section>
+
+      {/* Media Item Detail Modal */}
+      {selectedMedia && (
+        <div className="modal-overlay active" onClick={() => setSelectedMedia(null)}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '650px', padding: '2rem' }}
+          >
+            <button className="modal-close" onClick={() => setSelectedMedia(null)}>
+              <X size={24} />
+            </button>
+
+            {/* Image display */}
+            <div style={{
+              width: '100%',
+              maxHeight: '380px',
+              backgroundColor: 'var(--bg-secondary)',
+              borderRadius: '16px',
+              overflow: 'hidden',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '1px solid var(--border-color)'
+            }}>
+              {selectedMedia.imageUrl ? (
+                <img
+                  src={selectedMedia.imageUrl}
+                  alt={selectedMedia.title}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', maxHeight: '380px', display: 'block' }}
+                />
+              ) : (
+                <div style={{ padding: '3rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                  <Camera size={48} />
+                  <span>TUFAN Elektromobil</span>
+                </div>
+              )}
+            </div>
+
+            {/* Date Tag */}
+            {selectedMedia.date && (
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontSize: '0.8rem',
+                color: 'var(--tfn-orange)',
+                fontWeight: '600',
+                backgroundColor: 'rgba(255, 100, 10, 0.1)',
+                padding: '0.3rem 0.8rem',
+                borderRadius: '999px',
+                marginBottom: '0.75rem'
+              }}>
+                <Calendar size={13} /> {selectedMedia.date}
+              </span>
+            )}
+
+            {/* Event Title */}
+            <h3 style={{ fontSize: '1.6rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+              {selectedMedia.title}
+            </h3>
+
+            {/* Event Description */}
+            <div style={{ color: 'var(--text-secondary)', fontSize: '1rem', lineHeight: '1.7', whiteSpace: 'pre-wrap', marginBottom: '2rem' }}>
+              {selectedMedia.description || 'Bu etkinlik hakkında henüz ayrıntılı bir açıklama eklenmemiş.'}
+            </div>
+
+            <button className="btn btn-outline" onClick={() => setSelectedMedia(null)} style={{ width: '100%' }}>
+              {t.close}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer style={{ padding: '4rem 0 2rem 0', borderTop: '1px solid var(--border-color)', marginTop: '4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
@@ -203,3 +285,4 @@ export default function Sections({ onOpenAdminModal, lang }) {
     </div>
   );
 }
+

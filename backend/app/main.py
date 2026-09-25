@@ -26,8 +26,18 @@ models.Base.metadata.create_all(bind=engine)
 with engine.connect() as conn:
     from sqlalchemy import text
     try:
-        conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS admin_note VARCHAR;"))
-        conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS team VARCHAR;"))
+        if "sqlite" in str(engine.url):
+            try:
+                conn.execute(text("ALTER TABLE applications ADD COLUMN admin_note VARCHAR;"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE applications ADD COLUMN team VARCHAR;"))
+            except Exception:
+                pass
+        else:
+            conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS admin_note VARCHAR;"))
+            conn.execute(text("ALTER TABLE applications ADD COLUMN IF NOT EXISTS team VARCHAR;"))
         conn.commit()
     except Exception as e:
         print(f"Migration error: {e}")
@@ -36,48 +46,19 @@ with engine.connect() as conn:
 app = FastAPI(title="TUFAN Web API")
 
 origins = [
-    "http://localhost:3000",    # React varsayılan adresi
+    "https://tufan-frontend.onrender.com",
+    "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:5173",    # Vite / Vue varsayılan adresi
+    "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,            # Sadece bu adreslerden gelen isteklere izin ver
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],              # Tüm HTTP metotlarına (GET, POST, PUT, DELETE) izin ver
-    allow_headers=["*"],              # Tüm header bilgilerine izin ver
-)
-# Tüm HTTP hatalarını (404, 400 vb.) havada yakalayan merkezi sistem
-
-@app.exception_handler(HTTPException)
-async def custom_http_exception_handler(request: Request, exc: HTTPException):
-    # Hata çıktığı an dedektifimiz bunu dosyaya sessizce not ediyor:
-    logger.error(f"Hata Oluştu! Path: {request.url.path} | Durum Kodu: {exc.status_code} | Detay: {exc.detail}")
-    
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "status": "error",
-            "code": exc.status_code,
-            "message": exc.detail,
-            "path": request.url.path
-        }
-    )
-from fastapi.middleware.cors import CORSMiddleware
-
-# --- CORS AYARLARI BAŞLANGICI ---
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://tufan-frontend.onrender.com",  
-        "http://localhost:3000",                
-        "http://localhost:5173",                
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"],  
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 1. Veritabanı Oturumu (Session) Yönetimi

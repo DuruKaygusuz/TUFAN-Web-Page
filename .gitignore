@@ -5,3 +5,6 @@ node_modules/
 .venv
 TUFAN-monitor/logs/
 TUFAN-monitor/__pycache__/
+.DS_Store
+*.db
+

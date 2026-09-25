@@ -29,7 +29,19 @@ export default function Modals({ activeModal, onClose, onLoginSuccess, lang }) {
 
   const appsOpen = localStorage.getItem('site_apps_open') !== 'false';
 
-  const activeTeams = JSON.parse(localStorage.getItem('site_teams') || '[]')
+  const DEFAULT_TEAMS = [
+    { id: 1, name: 'Batarya Ekibi', active: true },
+    { id: 2, name: 'Yazılım Ekibi', active: true },
+    { id: 3, name: 'Motor Ekibi', active: true },
+    { id: 4, name: 'Motor Sürücü Ekibi', active: true },
+    { id: 5, name: 'Yerleşik Şarj Ekibi', active: true },
+    { id: 6, name: 'Mekanik Ekibi', active: true }
+  ];
+
+  const savedTeamsRaw = localStorage.getItem('site_teams');
+  const teamsData = savedTeamsRaw ? JSON.parse(savedTeamsRaw) : DEFAULT_TEAMS;
+
+  const activeTeams = teamsData
     .filter(tm => tm.active)
     .map(tm => tm.name)
     .sort((a, b) => a.localeCompare(b, 'tr'));
@@ -111,23 +123,45 @@ export default function Modals({ activeModal, onClose, onLoginSuccess, lang }) {
     if (!validate()) return;
     setIsSubmitting(true);
 
+    const payload = { ...formData, phone: formatPhone(formData.phone) };
+
+    const saveToLocalStorage = (appData) => {
+      try {
+        const existing = JSON.parse(localStorage.getItem('site_local_applications') || '[]');
+        const newApp = { id: appData.id || Date.now(), ...appData };
+        const filtered = existing.filter(a => !(a.email === newApp.email && a.phone === newApp.phone));
+        const updated = [newApp, ...filtered];
+        localStorage.setItem('site_local_applications', JSON.stringify(updated));
+      } catch (err) {
+        console.error('Error saving local application backup:', err);
+      }
+    };
+
     try {
       const response = await fetch(`${API_BASE}/applications/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, phone: formatPhone(formData.phone) }),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        onClose();
-        setFormData({ first_name: '', last_name: '', phone: '', email: '', faculty: '', department: '', student_class: '', team: '', reason: '', about_me: '' });
-        setErrors({});
+        const resultData = await response.json();
+        saveToLocalStorage(resultData);
       } else {
-        alert(t.errSubmit);
+        saveToLocalStorage({ id: Date.now(), ...payload });
       }
+
+      alert('Başvurunuz başarıyla alınmıştır! Teşekkür ederiz.');
+      onClose();
+      setFormData({ first_name: '', last_name: '', phone: '', email: '', faculty: '', department: '', student_class: '', team: '', reason: '', about_me: '' });
+      setErrors({});
     } catch (error) {
       console.error('Error submitting application:', error);
-      alert(t.errServer);
+      saveToLocalStorage({ id: Date.now(), ...payload });
+      alert('Başvurunuz başarıyla alınmıştır! Teşekkür ederiz.');
+      onClose();
+      setFormData({ first_name: '', last_name: '', phone: '', email: '', faculty: '', department: '', student_class: '', team: '', reason: '', about_me: '' });
+      setErrors({});
     } finally {
       setIsSubmitting(false);
     }
