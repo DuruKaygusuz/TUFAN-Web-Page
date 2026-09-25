@@ -6,6 +6,12 @@ from sqlalchemy import pool
 from alembic import context
 from dotenv import load_dotenv
 
+<<<<<<< HEAD
+=======
+from dotenv import load_dotenv
+import os
+
+>>>>>>> Duru-frontend
 # 1. Çevresel değişkenleri (environment variables) sisteme yüklüyoruz
 load_dotenv()
 
@@ -17,13 +23,28 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
+<<<<<<< HEAD
 # 3. Alembic'e modellerimizi tanıtıyoruz (hedef metadata)
+=======
+# 3. Alembic'e modellerimizi tanıtıyoruz
+>>>>>>> Duru-frontend
 target_metadata = Base.metadata
 
 # 4. DATABASE_URL'i güvenli bir şekilde .env dosyasından çekiyoruz
 database_url = os.getenv("DATABASE_URL")
 if not database_url:
     raise ValueError("DATABASE_URL bulunamadı! Lütfen .env dosyanızı kontrol edin.")
+<<<<<<< HEAD
+=======
+
+# 5. Çekilen URL'i Alembic konfigürasyonuna aktarıyoruz
+config.set_main_option("sqlalchemy.url", database_url)
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
+>>>>>>> Duru-frontend
 
 # 5. Çekilen URL'i Alembic konfigürasyonuna aktarıyoruz
 config.set_main_option("sqlalchemy.url", database_url)
