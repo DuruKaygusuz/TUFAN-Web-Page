@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, LogOut, X } from 'lucide-react';
-import { translations } from '../translations';
+import { translations } from '../translations'; // Projendeki dosya konumuna göre yolunu kontrol edebilirsin
+
 
 export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdmin, onLogout, lang, onLangChange }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -12,7 +13,7 @@ export default function Navbar({ onOpenAdminModal, onOpenApplicationModal, isAdm
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
-    
+
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (savedTheme === 'dark' || (!savedTheme && prefersDark) || document.documentElement.classList.contains('dark')) {
